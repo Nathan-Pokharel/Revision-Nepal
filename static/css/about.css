@@ -1,0 +1,41 @@
+body{
+    height:200vh;
+    width:100vw;
+}
+*{
+    z-index:1001;
+}
+
+.content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 80vh; /* Adjust height as needed */
+    text-align: center;
+}
+
+.discover-text {
+    font-size: 86px;
+    font-weight: bold;
+    line-height: 1.4; /* Adjust line-height for proper spacing */
+    margin-bottom: 20px; /* Add space below the text */
+    padding: 20px; /* Add padding to ensure text isn't cut off */
+    background: linear-gradient(to right, #ededed, #858587);
+    -webkit-background-clip: text;
+    color: transparent;
+}
+.about-content{
+    background: linear-gradient(to right, #ededed, #858587);
+    padding:0 400px;
+    -webkit-background-clip: text;
+    color: transparent;
+    font-family:inherit;
+    font-weight:600;
+    font-size:24px;
+}
+@media (max-width: 768px) {
+    .discover-text{
+        font-size:40px;
+    }
+}

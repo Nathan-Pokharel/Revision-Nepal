@@ -1,0 +1,176 @@
+{% extends 'layout.html' %}
+    {% block title %}Courses List{% endblock %}
+{% block links %}
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/courses.css') }}">
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+{% endblock %}
+{% block content %}
+
+<div class="searchbar">
+    <div class="search-input-wrapper">
+        <input type="text" class="search-input"  id="searchInput" placeholder = "Search Papers! ">
+    </div>
+</div>
+
+ <div class="content">
+     {% for folder in filestructure.folders %}
+     <div class="grid-container">
+         <div class="grid-content" onclick="navigateTo('{{ folder }}','nil')">
+             <h2 class="grid-title">
+                 <i class="fas fa-folder"></i> {{ folder }}
+             </h2>
+             <div class="pagination-tags">
+                 <i class="fas fa-chevron-left" onclick="showPreviousTag(this); event.stopPropagation();"></i>
+                 <div class="grid-tags" id="gridTags_{{ folder }}">
+                     {% for sub_folder in filestructure.sub_folders[folder] %}
+                     <span class="tag" onclick="navigateTo('{{ folder }}', '{{ sub_folder }}'); event.stopPropagation();">{{ sub_folder }}</span>
+                     {% endfor %}
+                 </div>
+                 <i class="fas fa-chevron-right" onclick="showNextTag(this); event.stopPropagation();"></i>
+             </div>
+         </div>
+     </div>
+     {% endfor %}
+     {% for file in filestructure.files %}
+         <div class="grid-container" onclick = "download('{{file}}')">
+             <div class="grid-content">
+                 <h2 class="grid-title">
+                     <i class="fas fa-file"></i>
+                     {{ file }}
+                 </h2>
+                 <div class="grid-tags">
+                     <span class = "ms" onclick = "download('ms/{{file}}'); event.stopPropagation();">ms<span>
+                 </div>
+             </div>
+         </div>
+     {% endfor %}
+ </div>
+
+{% endblock %}
+
+{% block javascripts %}
+<script>
+    function download(file){
+        currentUrl = window.location.href;
+        currentUrl = currentUrl.replace("https://revisionnepal.com/explore/","");
+        newurl = "/download/"+currentUrl+file;
+        window.location.href = newurl ;
+    }
+    const searchInput = document.getElementById('searchInput');
+    const gridTitles = document.querySelectorAll('.grid-title');
+
+    searchInput.addEventListener('input', function () {
+        const searchTerm = searchInput.value.toLowerCase();
+
+        gridTitles.forEach(title => {
+            const gridContainer = title.closest('.grid-container');
+            if (title.textContent.toLowerCase().includes(searchTerm)) {
+
+                gridContainer.style.visibility= 'visible';
+                gridContainer.style.display = 'flex';
+            } else {
+                gridContainer.style.visibility= 'hidden';
+                gridContainer.style.display = 'none';
+            }
+        });
+    });
+    const gridTagsIndexes = {};
+    let x = calculateChunkSize(); // Set your value here for the number of tags to display initially
+
+    function showTagsInRange(tags, startIndex, endIndex) {
+        tags.forEach((tag, index) => {
+            tag.style.display = (index >= startIndex && index < endIndex) ? 'inline-block' : 'none';
+        });
+    }
+
+    function showNextTag(icon) {
+        const gridTags = icon.parentElement.querySelector('.grid-tags');
+        if (gridTags) {
+            const tags = gridTags.querySelectorAll('.tag');
+            let currentIndex = gridTagsIndexes[gridTags.id] || 0;
+            const buffer = Math.min(tags.length - currentIndex - x, x);
+            const startIndex = currentIndex + buffer;
+            const endIndex = startIndex + x;
+            gridTagsIndexes[gridTags.id] = startIndex;
+            showTagsInRange(tags, startIndex, endIndex);
+        }
+    }
+
+    // Function to navigate to the previous set of tags
+    function showPreviousTag(icon) {
+        const gridTags = icon.parentElement.querySelector('.grid-tags');
+        if (gridTags) {
+            const tags = gridTags.querySelectorAll('.tag');
+            let currentIndex = gridTagsIndexes[gridTags.id] || 0;
+            const buffer = Math.min(currentIndex, x);
+            const startIndex = Math.max(currentIndex - x, 0);
+            const endIndex = startIndex + x;
+            gridTagsIndexes[gridTags.id] = startIndex;
+            showTagsInRange(tags, startIndex, endIndex);
+        }
+    }
+
+    window.addEventListener('load', function () {
+        const leftChevronIcons = document.querySelectorAll('.fas.fa-chevron-left');
+        leftChevronIcons.forEach(icon => {
+            showPreviousTag(icon); // Simulate click on left-chevron icon
+        });
+    });
+
+
+    // Recalculate x value and update display on resize
+    window.addEventListener('resize', function() {
+        x = calculateChunkSize(); // Recalculate chunk size
+        updateDisplay(); // Update the displayed tags based on the new x value
+    });
+
+    // Function to update the displayed tags based on the new x value
+    function updateDisplay() {
+        const gridTags = document.querySelectorAll('.grid-tags');
+        gridTags.forEach(tagsContainer => {
+            const folder = tagsContainer.id.replace('gridTags_', '');
+            const tags = tagsContainer.querySelectorAll('.tag');
+            let currentIndex = gridTagsIndexes[tagsContainer.id] || 0;
+            const startIndex = Math.max(currentIndex - x, 0);
+            const endIndex = startIndex + x;
+            gridTagsIndexes[tagsContainer.id] = startIndex;
+            showTagsInRange(tags, startIndex, endIndex);
+        });
+    }
+
+    function calculateChunkSize() {
+        const screenWidth = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
+        if (screenWidth < 530) {
+            return 1; // Display 1 folder per chunk
+        } else if (screenWidth < 752) {
+            return 1; // Display 2 folders per chunk
+        } else if (screenWidth < 850) {
+            return 2; // Display 3 folders per chunk
+        } else if (screenWidth < 1000) {
+            return 3; // Display 4 folders per chunk
+        } else if (screenWidth < 1200) {
+            return 4; // Display 5 folders per chunk
+        } else if (screenWidth < 1400) {
+            return 5; // Display 6 folders per chunk
+        } else if (screenWidth < 1600) {
+            return 6; // Display 7 folders per chunk
+        } else if (screenWidth < 1800) {
+            return 7; // Display 8 folders per chunk
+        } else if (screenWidth < 2000) {
+            return 8; // Display 9 folders per chunk
+        } else {
+            return 10; // Display 10 folders per chunk
+        }
+    }
+    function navigateTo(folder, subfolder) {
+        const currentUrl = window.location.href;
+        let newurl;
+        if (subfolder === "nil") {
+            newurl = currentUrl + folder + "/";
+        } else {
+            newurl = currentUrl + folder + "/" + subfolder + "/";
+        }
+        window.location.href = newurl;
+    }
+</script>
+{% endblock %}

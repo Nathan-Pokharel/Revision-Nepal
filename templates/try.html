@@ -1,0 +1,103 @@
+<script>
+const gridTagsIndexes = {};
+let x = calculateChunkSize(); // Set your value here for the number of tags to display initially
+
+function showTagsInRange(tags, startIndex, endIndex) {
+    tags.forEach((tag, index) => {
+        tag.style.display = (index >= startIndex && index < endIndex) ? 'inline-block' : 'none';
+    });
+}
+
+function showNextTag(icon) {
+    const gridTags = icon.parentElement.querySelector('.grid-tags');
+    if (gridTags) {
+        const tags = gridTags.querySelectorAll('.tag');
+        let currentIndex = gridTagsIndexes[gridTags.id] || 0;
+        const buffer = Math.min(tags.length - currentIndex - x, x);
+        const startIndex = currentIndex + buffer;
+        const endIndex = startIndex + x;
+        gridTagsIndexes[gridTags.id] = startIndex;
+        showTagsInRange(tags, startIndex, endIndex);
+    }
+}
+
+// Function to navigate to the previous set of tags
+function showPreviousTag(icon) {
+    const gridTags = icon.parentElement.querySelector('.grid-tags');
+    if (gridTags) {
+        const tags = gridTags.querySelectorAll('.tag');
+        let currentIndex = gridTagsIndexes[gridTags.id] || 0;
+        const buffer = Math.min(currentIndex, x);
+        const startIndex = Math.max(currentIndex - x, 0);
+        const endIndex = startIndex + x;
+        gridTagsIndexes[gridTags.id] = startIndex;
+        showTagsInRange(tags, startIndex, endIndex);
+    }
+}
+
+// Call this function to set the initial display
+function setInitialDisplay(folder) {
+    const tags = document.getElementById(`gridTags_${folder}`).querySelectorAll('.tag');
+    showTagsInRange(tags, 0, x);
+}
+
+// Call setInitialDisplay for each folder
+{% for folder in filestructure.folders %}
+setInitialDisplay('{{ folder }}');
+{% endfor %}
+
+// Recalculate x value and update display on resize
+window.addEventListener('resize', function() {
+    x = calculateChunkSize(); // Recalculate chunk size
+    updateDisplay(); // Update the displayed tags based on the new x value
+});
+
+// Function to update the displayed tags based on the new x value
+function updateDisplay() {
+    const gridTags = document.querySelectorAll('.grid-tags');
+    gridTags.forEach(tagsContainer => {
+        const folder = tagsContainer.id.replace('gridTags_', '');
+        const tags = tagsContainer.querySelectorAll('.tag');
+        let currentIndex = gridTagsIndexes[tagsContainer.id] || 0;
+        const startIndex = Math.max(currentIndex - x, 0);
+        const endIndex = startIndex + x;
+        gridTagsIndexes[tagsContainer.id] = startIndex;
+        showTagsInRange(tags, startIndex, endIndex);
+    });
+}
+
+function calculateChunkSize() {
+    const screenWidth = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
+    if (screenWidth < 530) {
+        return 1; // Display 1 folder per chunk
+    } else if (screenWidth < 752) {
+        return 2; // Display 2 folders per chunk
+    } else if (screenWidth < 850) {
+        return 3; // Display 3 folders per chunk
+    } else if (screenWidth < 1000) {
+        return 4; // Display 4 folders per chunk
+    } else if (screenWidth < 1200) {
+        return 5; // Display 5 folders per chunk
+    } else if (screenWidth < 1400) {
+        return 6; // Display 6 folders per chunk
+    } else if (screenWidth < 1600) {
+        return 7; // Display 7 folders per chunk
+    } else if (screenWidth < 1800) {
+        return 8; // Display 8 folders per chunk
+    } else if (screenWidth < 2000) {
+        return 9; // Display 9 folders per chunk
+    } else {
+        return 10; // Display 10 folders per chunk
+    }
+}
+function navigateTo(folder, subfolder) {
+    const currentUrl = window.location.href;
+    let newurl;
+    if (subfolder === "nil") {
+        newurl = currentUrl + folder + "/";
+    } else {
+        newurl = currentUrl + folder + "/" + subfolder + "/";
+    }
+    window.location.href = newurl;
+}
+</script>

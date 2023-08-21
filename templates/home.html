@@ -1,0 +1,24 @@
+{% extends 'layout.html' %}
+
+{% block links %}
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/index.css') }}">
+{% endblock links %}
+
+{% block title %} 
+    Home Page 
+{% endblock title %}
+
+{% block content%}
+    <div class="content">
+        <h1 class="discover-text">
+            Discover A Better<br>Way To Learn
+        </h1>
+        <div class = "button-primary" onclick="window.location.href='/explore'"> Explore Papers! </div>
+    </div>
+{% endblock content %}
+
+{% block javascripts %}
+</script>
+<script src="{{ url_for('static', filename='js/index.js') }}"></script>
+{% endblock javascripts %}
+
