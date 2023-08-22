@@ -32,14 +32,16 @@
      </div>
      {% endfor %}
      {% for file in filestructure.files %}
-         <div class="grid-container" onclick = "download('{{file}}')">
+         <div class="grid-container" onclick = "download('{{file.name}}')">
              <div class="grid-content">
                  <h2 class="grid-title">
                      <i class="fas fa-file"></i>
-                     {{ file }}
+                     {{ file.name }}
                  </h2>
                  <div class="grid-tags">
-                     <span class = "ms" onclick = "download('ms/{{file}}'); event.stopPropagation();">ms<span>
+                     {% if 'has_ms' in file.tags %}
+                         <span class = "ms" onclick = "download('ms/{{ file.name.replace('_qp_', '_ms_') }}'); event.stopPropagation();">ms<span>
+                      {%endif%}
                  </div>
              </div>
          </div>
@@ -145,21 +147,21 @@
         } else if (screenWidth < 752) {
             return 1; // Display 2 folders per chunk
         } else if (screenWidth < 850) {
-            return 2; // Display 3 folders per chunk
-        } else if (screenWidth < 1000) {
-            return 3; // Display 4 folders per chunk
+            return 1; // Display 3 folders per chunk
+        } else if (screenWidth < 1030) {
+            return 1; // Display 4 folders per chunk
         } else if (screenWidth < 1200) {
-            return 4; // Display 5 folders per chunk
+            return 2; // Display 5 folders per chunk
         } else if (screenWidth < 1400) {
-            return 5; // Display 6 folders per chunk
+            return 2; // Display 6 folders per chunk
         } else if (screenWidth < 1600) {
-            return 6; // Display 7 folders per chunk
+            return 3; // Display 7 folders per chunk
         } else if (screenWidth < 1800) {
-            return 7; // Display 8 folders per chunk
+            return 4; // Display 8 folders per chunk
         } else if (screenWidth < 2000) {
-            return 8; // Display 9 folders per chunk
+            return 4; // Display 9 folders per chunk
         } else {
-            return 10; // Display 10 folders per chunk
+            return 3; // Display 10 folders per chunk
         }
     }
     function navigateTo(folder, subfolder) {
@@ -174,3 +176,4 @@
     }
 </script>
 {% endblock %}
+

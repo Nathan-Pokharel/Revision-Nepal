@@ -9,7 +9,7 @@ class FileStructure:
         self.folders = []
         self.files = []
         self.sub_folders={}
-    
+
     def get_directory_listing(self):
         items = os.listdir(self.path)
         for item in items:
@@ -17,7 +17,7 @@ class FileStructure:
                 self.folders.append(item)
             elif os.path.isfile(os.path.join(self.path, item)):
                 self.files.append(item)
-        self.folders.sort(reverse=True)  
+        self.folders.sort(reverse=True)
         self.get_subfolders()
 
     def get_subfolders(self):
@@ -31,6 +31,21 @@ class FileStructure:
         self.folders = []
         self.files = []
         self.sub_folders = {}
+
+
+    def add_ms_tags(self):
+        ms_folder = os.path.join(self.path, 'ms')
+        ms_files = [file.replace("_qp_", "_ms_") for file in self.files]
+
+        if not os.path.exists(ms_folder):
+            for i,file in enumerate(self.files):
+                self.files[i] = {"name":file,"tags":[""]}
+        else:
+            for i, file in enumerate(self.files):
+                if ms_files[i] in os.listdir(ms_folder):
+                    self.files[i] = {"name": file, "tags": ["has_ms"]}
+                else:
+                    self.files[i] = {"name": file, "tags": [""]}
 
 app = Flask(__name__)
 filestructure = FileStructure()
@@ -50,24 +65,23 @@ def home():
 @app.route('/explore/')
 @app.route('/explore/<path:folder>')
 def explore(folder=None):
-    print("Entered")
     if folder:
         filestructure.clearstructure()
         filestructure.path = os.path.join(filestructure.base_path, unquote(unquote(folder)))
         filestructure.get_directory_listing()
+        filestructure.add_ms_tags()
     else:
         filestructure.clearstructure()
         filestructure.path = filestructure.base_path
         filestructure.get_directory_listing()
+        filestructure.add_ms_tags()
 
     return render_template('directory.html', filestructure=filestructure)
 
 @app.route('/download/<path:folder>/<path:file>')
 def download_file(folder, file):
-    file_path = os.path.join(filestructure.base_path, folder, file)
-    print(file_path)
-    return send_from_directory(filestructure.base_path, os.path.join(folder, file), as_attachment=True)
+    file_path = os.path.join(filestructure.base_path, unquote(unquote(folder)), unquote(unquote(file)))
+    return send_from_directory(os.path.dirname(file_path), os.path.basename(file_path), as_attachment=True)
 
 if __name__ == '__main__':
-    app.run(debug=True, port=5000, host='0.0.0.0')
-
+    app.run()

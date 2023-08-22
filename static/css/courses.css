@@ -54,7 +54,7 @@ body{
     color: white;
     justify-content: center;
     align-items: center;
-    gap: 15px;
+    gap:0px;
     flex-direction: column;
     padding-bottom:7px;
 }
@@ -65,7 +65,8 @@ body{
     align-items: center;
     justify-content: space-between;
     padding:0 30px;
-    border-radius: 23px;
+    border-radius:0px;
+    border-bottom:1px dotted #bdbdc0;
 }
 
 .grid-title {
@@ -99,7 +100,7 @@ body{
     display: flex;
     border: 3px solid rgba(255,255,255,0.08);
     height:65px;
-    border-radius: 23px;
+    border-radius:0px;
     width: 90%; /* Set the width to 80% of the parent element's width */
     transition: border-color 0.2s; /* Add the transition property for border-color */
 }
@@ -129,6 +130,16 @@ body{
     }
 }
 
+@media screen and (max-width:800px) {
+        .grid-title{
+                width:200px;
+        }
+        .content{
+            gap:0px;
+        }
+
+
+}
 @media screen and (max-width:600px) {
         .grid-title{
                 width:200px;
@@ -140,11 +151,35 @@ body{
             font-size:16px;
     }
 }
-@media screen and (max-width:400px) {
+@media screen and (max-width:480px) {
     .grid-title{
             width:120px;
             font-size:15px;
     }
     .grid-title i{
             margin-right:10px;
+        }
+        .tag{
+                font-size:14px;
+        }
+        .grid-content{
+                padding:0px 25px;
+        }
 }
+
+@media screen and (max-width:400px) {
+    .grid-title{
+            width:100px;
+            font-size:13px;
+    }
+    .grid-title i{
+            margin-right:8px;
+        }
+        .tag{
+                font-size:13px;
+        }
+        .grid-content{
+                padding:0px 20px;
+        }
+}
+
